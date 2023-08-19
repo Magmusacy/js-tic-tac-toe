@@ -18,7 +18,7 @@ const displayController = (() => {
         board.innerHTML = "";
         for (const row of gameBoard.board) {
             for (const column of row) {
-                const newElement = `<div class="cell unselectable">${column}</div>`
+                const newElement = `<button class="cell unselectable">${column}</button>`
                 board.insertAdjacentHTML("beforeend", newElement);
             };
         };
