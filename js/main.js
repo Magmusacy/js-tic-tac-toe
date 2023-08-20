@@ -1,14 +1,15 @@
-const Player = (name, mark) => {
-    return {name, mark}
-}
+const player = (name, mark) => {
+    return {name, mark};
+};
 
 const gameBoard = (() => {
     let board = [
-                // Populated for testing purposes
-                 ['', '', 'X'],
-                 ['O', 'X', 'X'],
-                 ['X', '', '']
+                 ['', '', ''],
+                 ['', '', ''],
+                 ['', '', '']
                 ];
+
+    const getBoard = () => board;
 
     const addMark = (row, col, mark) => {
         if (
@@ -17,9 +18,9 @@ const gameBoard = (() => {
             board[row][col] === ''
            ) {
             board[row][col] = mark;
-            return true
+            return true;
         };
-        return false
+        return false;
     };
 
     const isBoardFull = () => {
@@ -31,7 +32,7 @@ const gameBoard = (() => {
         for (const row of board) {
             if (row[0] === playerMark && row[1] === playerMark && row[2] === playerMark) {
                 return true;
-            }
+            };
         };
 
         // Check columns
@@ -52,30 +53,59 @@ const gameBoard = (() => {
         return false;
     };
 
-    return {board, addMark, isBoardFull, checkForWinner};
+    return {getBoard, addMark, isBoardFull, checkForWinner};
 })();
 
 const displayController = (() => {
+    const board = gameBoard.getBoard();
+    const boardDiv = document.querySelector('#board');
+
     const drawBoard = () => {
-        const board = document.querySelector('#board');
-        board.innerHTML = "";
-        for (const row of gameBoard.board) {
-            for (const column of row) {
-                const newElement = `<button class="cell unselectable">${column}</button>`
-                board.insertAdjacentHTML("beforeend", newElement);
+        boardDiv.innerHTML = "";
+        for (let row = 0; row < 3; row++) {
+            for (let col = 0; col < 3; col++) {
+                const newElement = `<button class="cell unselectable" data-col="${col}" data-row="${row}">${board[row][col]}</button>`;
+                boardDiv.insertAdjacentHTML("beforeend", newElement);
             };
         };
     };
+
+    function boardClickHandler(e) {
+        const clickedCol = e.target.dataset.col;
+        const clickedRow = e.target.dataset.row;
+
+        // Check whether the user clicked on a legal cell
+        if (clickedCol && clickedRow) {
+            gameFlow.playRound(clickedRow, clickedCol);
+            displayController.drawBoard();
+        } 
+    }
+
+    boardDiv.addEventListener('click', boardClickHandler);
 
     return {drawBoard};
 })();
 
 const gameFlow = (() => {
+    const playerOne = player('player_one', 'X');
+    const playerTwo = player('player_two', 'O');
+    let currentPlayer = playerOne;
+
+    const changeCurrentPlayer = () => {
+        currentPlayer = currentPlayer === playerOne ? playerTwo : playerOne; 
+    };
+
+    const playRound = (row, col) => {
+        gameBoard.addMark(row, col, currentPlayer.mark);
+        console.log(gameBoard.checkForWinner(currentPlayer.mark), gameBoard.isBoardFull());
+        changeCurrentPlayer();
+    };
+
     const startGame = () => {
         displayController.drawBoard();
     };
 
-    return {startGame};
+    return {startGame, playRound};
 })();
 
 gameFlow.startGame();
