@@ -69,6 +69,7 @@ const displayController = (() => {
     const gameStartForm = document.querySelector('.initialize-game');
     const restartGameButton = document.querySelector('#restart-game');
 
+    // Since we update after current user made his move, the color of that user is correct if he's made winning move :)
     const updateGameTurn = (playerName, mark) => {
         gameAlertDiv.textContent = `${playerName}'s turn`;
         if (mark === 'X') {
@@ -80,7 +81,7 @@ const displayController = (() => {
         }
     };
     
-    const displayWin = (playerName, mark) => {
+    const displayWin = (playerName) => {
         gameAlertDiv.textContent = `${playerName} won!`;
     };
 
