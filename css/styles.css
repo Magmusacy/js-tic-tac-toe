@@ -4,6 +4,7 @@
 
 :root {
     --theme: #107468;
+    --borders: rgb(61, 54, 54);
 }
 
 body {
@@ -19,12 +20,14 @@ header {
     text-align: center;
     padding: 1rem;
     font-size: 40px;
+    border-bottom: var(--borders) 1px solid;
 }
 
 main {
     flex: 1;
     display: flex;
     flex-direction: column;
+    position: relative;
 }
 
 .board-section {
@@ -38,7 +41,14 @@ main {
     grid-template-columns: repeat(3, 100px);
     grid-auto-rows: 100px;
     gap: 0.4rem;
-    background-color: rgb(61, 54, 54);
+    background-color: var(--borders);
+}
+
+
+.board-initialization {
+    visibility: hidden;
+    opacity: 0;
+    transition: all 2s ease-in-out;
 }
 
 .cell {
@@ -86,7 +96,66 @@ main {
 }
 
 #game-alert {
+    min-height: 40px;
     text-align: center;
     margin-top: 20px;
     font-size: 30px;
+}
+
+.initialize-game {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 10px;
+    gap: 10px;
+    position: absolute;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: var(--theme);
+    opacity: 1;
+    transition: all 1s ease-in-out;
+}
+
+.input-controls {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.input-controls > div {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    font-size: 1.25rem;
+    align-items: center;
+}
+
+.input-controls > div > input {
+    width: 100%;
+}
+
+.initialize-game > button {
+    width: 200px;
+    padding: 10px;
+    border-radius: 6px;
+    border: 0;
+    transition: background-color 0.2s ease-in-out;
+}
+
+.initialize-game > button:hover {
+    background-color: rgb(202, 202, 202);
+}
+
+.fade-out {
+    opacity: 0;
+    visibility: hidden;
+}
+
+.fade-in {
+    opacity: 1;
+    visibility: visible;
 }

@@ -14,17 +14,28 @@
     </header>
 
     <main>
-        <div id="players">
-             <div>X: 0</div>
-             <div class="player-turn">O: 0</div>
-        </div>
-       
+        <form action="#" class="initialize-game">
+            <div class="input-controls">
+                <div>
+                    <label for="player-one">Player 1</label>
+                    <input id="player-one" type="text" required>
+                </div>
+
+                <div>
+                    <label for="player-two">Player 2</label>
+                    <input id="player-two" type="text" required>
+                </div>
+            </div>
+
+            <button id="start-game">Start game</button>
+        </form>
+
+
         <div id="game-alert">
-             X's turn
         </div>
 
         <div class="board-section">
-            <div id="board">
+            <div id="board" class="board-initialization">
             </div>
         </div>
     </main>

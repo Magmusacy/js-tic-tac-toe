@@ -60,6 +60,7 @@ const displayController = (() => {
     const board = gameBoard.getBoard();
     const boardDiv = document.querySelector('#board');
     const gameAlertDiv = document.querySelector('#game-alert');
+    const gameStartForm = document.querySelector('.initialize-game');
 
     const updateGameTurn = (playerName) => {
         gameAlertDiv.textContent = `${playerName}'s turn`;
@@ -72,7 +73,7 @@ const displayController = (() => {
     const displayTie = () => {
         gameAlertDiv.textContent = 'Tie!';
     };
-    
+
     const drawBoard = () => {
         boardDiv.innerHTML = "";
         for (let row = 0; row < 3; row++) {
@@ -94,16 +95,32 @@ const displayController = (() => {
         } 
     }
 
+    function gameStartFormHandler(e) {
+        e.preventDefault();
+        playerOneName = this.elements['player-one'].value;
+        playerTwoName = this.elements['player-two'].value;
+        gameStartForm.classList.add('fade-out')
+        boardDiv.classList.add('fade-in');
+        gameFlow.startGame(playerOneName, playerTwoName);
+    };
+
     boardDiv.addEventListener('click', boardClickHandler);
+    gameStartForm.addEventListener('submit', gameStartFormHandler);
 
     return {drawBoard, updateGameTurn, displayWin, displayTie};
 })();
 
 const gameFlow = (() => {
-    const playerOne = player('player_one', 'X');
-    const playerTwo = player('player_two', 'O');
+    const playerOne = player('', 'X');
+    const playerTwo = player('', 'O');
     let gameEnded = false;
     let currentPlayer = playerOne;
+    
+    const startGame = (playerOneName, playerTwoName) => {
+        displayController.drawBoard();
+        playerOne.name = playerOneName;
+        playerTwo.name = playerTwoName;
+    };
 
     const changeCurrentPlayer = () => {
         currentPlayer = currentPlayer === playerOne ? playerTwo : playerOne; 
@@ -125,11 +142,5 @@ const gameFlow = (() => {
         };
     };
 
-    const startGame = () => {
-        displayController.drawBoard();
-    };
-
     return {startGame, playRound};
 })();
-
-gameFlow.startGame();
