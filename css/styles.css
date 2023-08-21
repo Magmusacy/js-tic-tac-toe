@@ -77,7 +77,15 @@ main {
     border-bottom: 3px solid white;
 }
 
-#game-turn {
+.player_one {
+    color: black;
+}
+
+.player_two { 
+    color: white;
+}
+
+#game-alert {
     text-align: center;
     margin-top: 20px;
     font-size: 30px;

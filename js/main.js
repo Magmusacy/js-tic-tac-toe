@@ -36,8 +36,8 @@ const gameBoard = (() => {
         };
 
         // Check columns
-        for (let row = 0; row < 3; row++) {
-            if (board[row][0] === playerMark && board[row][1] === playerMark && board[row][2] === playerMark) {
+        for (let col = 0; col < 3; col++) {
+            if (board[0][col] === playerMark && board[1][col] === playerMark && board[2][col] === playerMark) {
                 return true;
             };
         };
@@ -59,7 +59,20 @@ const gameBoard = (() => {
 const displayController = (() => {
     const board = gameBoard.getBoard();
     const boardDiv = document.querySelector('#board');
+    const gameAlertDiv = document.querySelector('#game-alert');
 
+    const updateGameTurn = (playerName) => {
+        gameAlertDiv.textContent = `${playerName}'s turn`;
+    };
+
+    const displayWin = (playerName) => {
+        gameAlertDiv.textContent = `${playerName} won!`;
+    };
+
+    const displayTie = () => {
+        gameAlertDiv.textContent = 'Tie!';
+    };
+    
     const drawBoard = () => {
         boardDiv.innerHTML = "";
         for (let row = 0; row < 3; row++) {
@@ -83,12 +96,13 @@ const displayController = (() => {
 
     boardDiv.addEventListener('click', boardClickHandler);
 
-    return {drawBoard};
+    return {drawBoard, updateGameTurn, displayWin, displayTie};
 })();
 
 const gameFlow = (() => {
     const playerOne = player('player_one', 'X');
     const playerTwo = player('player_two', 'O');
+    let gameEnded = false;
     let currentPlayer = playerOne;
 
     const changeCurrentPlayer = () => {
@@ -96,9 +110,19 @@ const gameFlow = (() => {
     };
 
     const playRound = (row, col) => {
-        gameBoard.addMark(row, col, currentPlayer.mark);
-        console.log(gameBoard.checkForWinner(currentPlayer.mark), gameBoard.isBoardFull());
-        changeCurrentPlayer();
+        if (gameEnded) return;
+
+        const move = gameBoard.addMark(row, col, currentPlayer.mark);
+        if (gameBoard.checkForWinner(currentPlayer.mark)) {
+            displayController.displayWin(currentPlayer.name);
+            gameEnded = true;
+        } else if (gameBoard.isBoardFull()) {
+            displayController.displayTie();
+            gameEnded = true;
+        } else if (move) {
+            displayController.updateGameTurn(currentPlayer.name);
+            changeCurrentPlayer();
+        };
     };
 
     const startGame = () => {
