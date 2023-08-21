@@ -62,11 +62,18 @@ const displayController = (() => {
     const gameAlertDiv = document.querySelector('#game-alert');
     const gameStartForm = document.querySelector('.initialize-game');
 
-    const updateGameTurn = (playerName) => {
+    const updateGameTurn = (playerName, mark) => {
         gameAlertDiv.textContent = `${playerName}'s turn`;
+        if (mark === 'X') {
+            gameAlertDiv.classList.add('player-one')
+            gameAlertDiv.classList.remove('player-two')
+        } else {
+            gameAlertDiv.classList.add('player-two')
+            gameAlertDiv.classList.remove('player-one')
+        }
     };
 
-    const displayWin = (playerName) => {
+    const displayWin = (playerName, mark) => {
         gameAlertDiv.textContent = `${playerName} won!`;
     };
 
@@ -75,10 +82,13 @@ const displayController = (() => {
     };
 
     const drawBoard = () => {
+        let colorClass;
         boardDiv.innerHTML = "";
         for (let row = 0; row < 3; row++) {
             for (let col = 0; col < 3; col++) {
-                const newElement = `<button class="cell unselectable" data-col="${col}" data-row="${row}">${board[row][col]}</button>`;
+                if (board[row][col] === 'X') colorClass = 'player-one';
+                else if (board[row][col] === 'O') colorClass = 'player-two';
+                const newElement = `<button class="cell unselectable ${colorClass}" data-col="${col}" data-row="${row}">${board[row][col]}</button>`;
                 boardDiv.insertAdjacentHTML("beforeend", newElement);
             };
         };
@@ -120,6 +130,7 @@ const gameFlow = (() => {
         displayController.drawBoard();
         playerOne.name = playerOneName;
         playerTwo.name = playerTwoName;
+        displayController.updateGameTurn(currentPlayer.name, currentPlayer.mark)
     };
 
     const changeCurrentPlayer = () => {
@@ -131,14 +142,14 @@ const gameFlow = (() => {
 
         const move = gameBoard.addMark(row, col, currentPlayer.mark);
         if (gameBoard.checkForWinner(currentPlayer.mark)) {
-            displayController.displayWin(currentPlayer.name);
+            displayController.displayWin(currentPlayer.name, currentPlayer.mark);
             gameEnded = true;
         } else if (gameBoard.isBoardFull()) {
             displayController.displayTie();
             gameEnded = true;
         } else if (move) {
-            displayController.updateGameTurn(currentPlayer.name);
             changeCurrentPlayer();
+            displayController.updateGameTurn(currentPlayer.name, currentPlayer.mark);
         };
     };
 

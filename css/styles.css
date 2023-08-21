@@ -87,11 +87,11 @@ main {
     border-bottom: 3px solid white;
 }
 
-.player_one {
+.player-one {
     color: black;
 }
 
-.player_two { 
+.player-two { 
     color: white;
 }
 
