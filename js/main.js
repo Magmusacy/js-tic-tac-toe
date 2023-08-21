@@ -3,13 +3,18 @@ const player = (name, mark) => {
 };
 
 const gameBoard = (() => {
-    let board = [
-                 ['', '', ''],
-                 ['', '', ''],
-                 ['', '', '']
-                ];
+    let board;
 
     const getBoard = () => board;
+
+    const initializeNewBoard = () => {
+        board = 
+           [
+            ['', '', ''],
+            ['', '', ''],
+            ['', '', '']
+           ];
+    };
 
     const addMark = (row, col, mark) => {
         if (
@@ -53,14 +58,16 @@ const gameBoard = (() => {
         return false;
     };
 
-    return {getBoard, addMark, isBoardFull, checkForWinner};
+    initializeNewBoard()
+
+    return {getBoard, addMark, isBoardFull, checkForWinner, initializeNewBoard};
 })();
 
 const displayController = (() => {
-    const board = gameBoard.getBoard();
     const boardDiv = document.querySelector('#board');
     const gameAlertDiv = document.querySelector('#game-alert');
     const gameStartForm = document.querySelector('.initialize-game');
+    const restartGameButton = document.querySelector('#restart-game');
 
     const updateGameTurn = (playerName, mark) => {
         gameAlertDiv.textContent = `${playerName}'s turn`;
@@ -72,7 +79,7 @@ const displayController = (() => {
             gameAlertDiv.classList.remove('player-one')
         }
     };
-
+    
     const displayWin = (playerName, mark) => {
         gameAlertDiv.textContent = `${playerName} won!`;
     };
@@ -80,8 +87,9 @@ const displayController = (() => {
     const displayTie = () => {
         gameAlertDiv.textContent = 'Tie!';
     };
-
+    
     const drawBoard = () => {
+        const board = gameBoard.getBoard();
         let colorClass;
         boardDiv.innerHTML = "";
         for (let row = 0; row < 3; row++) {
@@ -93,6 +101,14 @@ const displayController = (() => {
             };
         };
     };
+
+    const displayRestartButton = () => {
+        restartGameButton.classList.remove('hide');
+    };
+
+    const hideRestartButton = () => {
+        restartGameButton.classList.add('hide');
+    }
 
     function boardClickHandler(e) {
         const clickedCol = e.target.dataset.col;
@@ -114,23 +130,45 @@ const displayController = (() => {
         gameFlow.startGame(playerOneName, playerTwoName);
     };
 
+    function restartGameHandler() {
+        gameFlow.restartGame();
+    };
+
     boardDiv.addEventListener('click', boardClickHandler);
     gameStartForm.addEventListener('submit', gameStartFormHandler);
+    restartGameButton.addEventListener('click', restartGameHandler);
 
-    return {drawBoard, updateGameTurn, displayWin, displayTie};
+    return {drawBoard, updateGameTurn, displayWin, displayTie, displayRestartButton, hideRestartButton};
 })();
 
 const gameFlow = (() => {
     const playerOne = player('', 'X');
     const playerTwo = player('', 'O');
-    let gameEnded = false;
-    let currentPlayer = playerOne;
+    let gameEnded;
+    let currentPlayer;
+
+    const setupGame = () => {
+        gameEnded = false;
+        currentPlayer = playerOne;
+        displayController.drawBoard();
+        displayController.updateGameTurn(currentPlayer.name, currentPlayer.mark)
+        displayController.hideRestartButton();
+    };
     
     const startGame = (playerOneName, playerTwoName) => {
-        displayController.drawBoard();
         playerOne.name = playerOneName;
         playerTwo.name = playerTwoName;
-        displayController.updateGameTurn(currentPlayer.name, currentPlayer.mark)
+        setupGame();
+    };
+
+    const endGame = () => {
+        gameEnded = true;
+        displayController.displayRestartButton();
+    };
+
+    const restartGame = () => {
+        gameBoard.initializeNewBoard();
+        setupGame();
     };
 
     const changeCurrentPlayer = () => {
@@ -143,15 +181,15 @@ const gameFlow = (() => {
         const move = gameBoard.addMark(row, col, currentPlayer.mark);
         if (gameBoard.checkForWinner(currentPlayer.mark)) {
             displayController.displayWin(currentPlayer.name, currentPlayer.mark);
-            gameEnded = true;
+            endGame();
         } else if (gameBoard.isBoardFull()) {
             displayController.displayTie();
-            gameEnded = true;
+            endGame();
         } else if (move) {
             changeCurrentPlayer();
             displayController.updateGameTurn(currentPlayer.name, currentPlayer.mark);
         };
     };
 
-    return {startGame, playRound};
+    return {startGame, playRound, restartGame};
 })();

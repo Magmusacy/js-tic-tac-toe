@@ -5,6 +5,8 @@
 :root {
     --theme: #107468;
     --borders: rgb(61, 54, 54);
+    --button-hover: rgb(202, 202, 202);
+    --button-transition: background-color 0.2s ease-in-out;
 }
 
 body {
@@ -143,11 +145,11 @@ main {
     padding: 10px;
     border-radius: 6px;
     border: 0;
-    transition: background-color 0.2s ease-in-out;
+    transition: var(--button-transition);
 }
 
 .initialize-game > button:hover {
-    background-color: rgb(202, 202, 202);
+    background-color: var(--button-hover);
 }
 
 .fade-out {
@@ -158,4 +160,27 @@ main {
 .fade-in {
     opacity: 1;
     visibility: visible;
+}
+
+.restart-section {
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.restart-section > button {
+    width: 150px;
+    padding: 10px;
+    border: 0;
+    border-radius: 6px;
+    transition: var(--button-transition);
+}
+
+.restart-section > button:hover {
+    background-color: var(--button-hover);
+}
+
+.hide {
+    visibility: hidden;
 }
