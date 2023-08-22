@@ -2,6 +2,19 @@ const player = (name, mark) => {
     return {name, mark};
 };
 
+const playerAi = (name, mark) => {
+    const prototype = player(name, mark);
+    const isAi = true;
+
+    const makeMove = () => {
+        const availablePositions = gameBoard.getEmptyCells();
+        const {row, col} = availablePositions[Math.floor(Math.random() * availablePositions.length)];
+        return gameBoard.addMark(row, col, mark);
+    };
+
+    return Object.assign({}, prototype, {isAi, makeMove});
+};
+
 const gameBoard = (() => {
     let board;
 
@@ -58,9 +71,20 @@ const gameBoard = (() => {
         return false;
     };
 
+    const getEmptyCells = () => {
+        const emptyCells = [];
+        for (let row = 0; row < 3; row++) {
+            for (let col = 0; col < 3; col++) {
+                if (board[row][col] === '') emptyCells.push({row, col});
+            };
+        };
+
+        return emptyCells;
+    };
+
     initializeNewBoard()
 
-    return {getBoard, addMark, isBoardFull, checkForWinner, initializeNewBoard};
+    return {getBoard, addMark, isBoardFull, checkForWinner, initializeNewBoard, getEmptyCells};
 })();
 
 const displayController = (() => {
@@ -143,8 +167,8 @@ const displayController = (() => {
 })();
 
 const gameFlow = (() => {
-    const playerOne = player('', 'X');
-    const playerTwo = player('', 'O');
+    let playerOne;
+    let playerTwo; 
     let gameEnded;
     let currentPlayer;
 
@@ -152,13 +176,13 @@ const gameFlow = (() => {
         gameEnded = false;
         currentPlayer = playerOne;
         displayController.drawBoard();
-        displayController.updateGameTurn(currentPlayer.name, currentPlayer.mark)
+        displayController.updateGameTurn(currentPlayer.name, currentPlayer.mark);
         displayController.hideRestartButton();
     };
     
-    const startGame = (playerOneName, playerTwoName) => {
-        playerOne.name = playerOneName;
-        playerTwo.name = playerTwoName;
+    const startGame = (playerOneName, playerTwoName, enabledAi = false) => {
+        playerOne = player(playerOneName, 'X');
+        playerTwo = enabledAi ? playerAi('AI', 'O') : player(playerTwoName, 'O');
         setupGame();
     };
 
@@ -178,8 +202,8 @@ const gameFlow = (() => {
 
     const playRound = (row, col) => {
         if (gameEnded) return;
+        const move = currentPlayer.isAi ? currentPlayer.makeMove() : gameBoard.addMark(row, col, currentPlayer.mark);
 
-        const move = gameBoard.addMark(row, col, currentPlayer.mark);
         if (gameBoard.checkForWinner(currentPlayer.mark)) {
             displayController.displayWin(currentPlayer.name, currentPlayer.mark);
             endGame();
@@ -189,6 +213,10 @@ const gameFlow = (() => {
         } else if (move) {
             changeCurrentPlayer();
             displayController.updateGameTurn(currentPlayer.name, currentPlayer.mark);
+            if (currentPlayer.isAi) {
+                // Don't have to supply row and col arguments since AI hsa it's own method of choosing those
+                playRound();
+            };
         };
     };
 
