@@ -92,6 +92,7 @@ const displayController = (() => {
     const gameAlertDiv = document.querySelector('#game-alert');
     const gameStartForm = document.querySelector('.initialize-game');
     const restartGameButton = document.querySelector('#restart-game');
+    const gamemodeSelector = document.querySelector('#gamemode');
 
     // Since we update after current user made his move, the color of that user is correct if he's made winning move :)
     const updateGameTurn = (playerName, mark) => {
@@ -159,9 +160,19 @@ const displayController = (() => {
         gameFlow.restartGame();
     };
 
+    function gamemodeSelectorHandler(e) {
+        const playerTwo = document.querySelector('#player-two');
+        if (this.value === 'default') {
+            playerTwo.removeAttribute('disabled');
+            return;
+        };
+        playerTwo.setAttribute('disabled', '');
+    };
+
     boardDiv.addEventListener('click', boardClickHandler);
     gameStartForm.addEventListener('submit', gameStartFormHandler);
     restartGameButton.addEventListener('click', restartGameHandler);
+    gamemodeSelector.addEventListener('change', gamemodeSelectorHandler);
 
     return {drawBoard, updateGameTurn, displayWin, displayTie, displayRestartButton, hideRestartButton};
 })();

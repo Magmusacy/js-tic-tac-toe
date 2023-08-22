@@ -110,7 +110,7 @@ main {
     align-items: center;
     justify-content: center;
     padding: 10px;
-    gap: 10px;
+    gap: 2rem;
     position: absolute;
     z-index: 1;
     left: 0;
@@ -183,4 +183,16 @@ main {
 
 .hide {
     visibility: hidden;
+}
+
+.gamemode-selection {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: .5rem;
+    font-size: 1.2rem;
+}
+
+#gamemode {
+    padding: .3rem;
 }

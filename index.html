@@ -17,14 +17,23 @@
         <form action="#" class="initialize-game">
             <div class="input-controls">
                 <div>
-                    <label for="player-one" class="player-one">Player 1</label>
+                    <label for="player-one" class="player-one">Player 1 [X]</label>
                     <input id="player-one" type="text" required>
                 </div>
 
                 <div>
-                    <label for="player-two" class="player-two">Player 2</label>
+                    <label for="player-two" class="player-two">Player 2 [O]</label>
                     <input id="player-two" type="text" required>
                 </div>
+            </div>
+            
+            <div class="gamemode-selection">
+                <label for="gamemode">Choose gamemode</label>
+                <select name="gamemode" id="gamemode">
+                    <option value="default">Human [X] vs Human [O]</option>
+                    <option value="ai-stupid">Human [X] vs AI [O] (stupid)</option>
+                    <option value="ai-smart">Human [X] vs AI [O] (smart)</option>
+                </select>
             </div>
 
             <button id="start-game">Start game</button>
