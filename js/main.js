@@ -2,23 +2,103 @@ const player = (name, mark) => {
     return {name, mark};
 };
 
-const playerAi = (name, mark) => {
-    const prototype = player(name, mark);
-    const isAi = true;
+// think how would you handle different types of AI, shoud i leave the same object and add multiple methods or change method depending on type ???
 
+const stupidAi = (mark) => {
     const makeMove = () => {
         const availablePositions = gameBoard.getEmptyCells();
         const {row, col} = availablePositions[Math.floor(Math.random() * availablePositions.length)];
         return gameBoard.addMark(row, col, mark);
     };
 
-    return Object.assign({}, prototype, {isAi, makeMove});
+    return {makeMove};
+};
+
+const smartAi = () => {
+    MIN_MARK = 'O';
+    MAX_MARK = 'X';
+
+    const makeMove = () => {
+        const originalState = gameBoard.getBoard();
+        let bestScore = Infinity;
+        let bestMove;
+        for (const possibleMove of gameBoard.getEmptyCells()) {
+            const copyBoardState = copyBoardMove(originalState, possibleMove.row, possibleMove.col, MIN_MARK)
+            let score = minimax(copyBoardState, true);
+            gameBoard.setBoard(originalState);
+            if (score < bestScore) {
+                bestScore = score;
+                bestMove = possibleMove;
+            }
+        };
+
+        return gameBoard.addMark(bestMove.row, bestMove.col, MIN_MARK);
+    };
+    
+    const minimax = (boardState, maximizingPlayer) => {
+        gameBoard.setBoard(boardState)
+
+        // Check for terminal state
+        if (gameBoard.checkForWinner(MAX_MARK)) {
+            return 1;
+        } else if (gameBoard.checkForWinner(MIN_MARK)) {
+            return -1;
+        } else if (gameBoard.isBoardFull()) {
+            return 0;
+        };
+
+        if (maximizingPlayer) {
+            let bestScore = -Infinity;
+            for (const possibleMove of gameBoard.getEmptyCells()) {
+                const copyBoardState = copyBoardMove(boardState, possibleMove.row, possibleMove.col, MAX_MARK);
+                let score = minimax(copyBoardState, false);
+                bestScore = Math.max(score, bestScore);
+            }
+
+            return bestScore;
+        } else {
+            let bestScore = Infinity;
+            for (const possibleMove of gameBoard.getEmptyCells()) {
+                const copyBoardState = copyBoardMove(boardState, possibleMove.row, possibleMove.col, MIN_MARK);
+                let score = minimax(copyBoardState, true);
+                bestScore = Math.min(score, bestScore);
+            }
+
+            return bestScore;
+        };
+    };
+
+    const copyBoardMove = (state, row, col, mark) => {
+        gameBoard.setBoard(cloneBoardState(state));
+        gameBoard.addMark(row, col, mark)
+        return gameBoard.getBoard();
+    };
+
+    const cloneBoardState = state => state.map(row => [...row]);
+    
+    return {makeMove};
+};
+
+const playerAi = (name, mark, aiType) => {
+    const prototype = player(name, mark);
+    const isAi = true;
+    let aiModel;
+
+    if (aiType === 'ai-stupid') {
+        aiModel = stupidAi(mark);
+    } else if (aiType === 'ai-smart') {
+        aiModel = smartAi(mark);
+    };
+
+    return Object.assign({}, aiModel, prototype, {isAi});
 };
 
 const gameBoard = (() => {
     let board;
 
     const getBoard = () => board;
+
+    const setBoard = newBoard => board = newBoard;
 
     const initializeNewBoard = () => {
         board = 
@@ -84,7 +164,7 @@ const gameBoard = (() => {
 
     initializeNewBoard()
 
-    return {getBoard, addMark, isBoardFull, checkForWinner, initializeNewBoard, getEmptyCells};
+    return {getBoard, setBoard, addMark, isBoardFull, checkForWinner, initializeNewBoard, getEmptyCells};
 })();
 
 const displayController = (() => {
@@ -149,11 +229,17 @@ const displayController = (() => {
 
     function gameStartFormHandler(e) {
         e.preventDefault();
-        playerOneName = this.elements['player-one'].value;
-        playerTwoName = this.elements['player-two'].value;
+        const playerOneName = this.elements['player-one'].value;
+        const playerTwoName = this.elements['player-two'].value;
+        const selectedGamemode = this.elements['gamemode'].value;
+        // convert this to switch case
+        if (selectedGamemode === 'default') {
+            gameFlow.startGame(playerOneName, playerTwoName);
+        } else {
+            gameFlow.startGame(playerOneName, playerTwoName, selectedGamemode);
+        };
         gameStartForm.classList.add('fade-out')
         boardDiv.classList.add('fade-in');
-        gameFlow.startGame(playerOneName, playerTwoName);
     };
 
     function restartGameHandler() {
@@ -191,9 +277,13 @@ const gameFlow = (() => {
         displayController.hideRestartButton();
     };
     
-    const startGame = (playerOneName, playerTwoName, enabledAi = false) => {
+    const startGame = (playerOneName, playerTwoName, aiType = null) => {
         playerOne = player(playerOneName, 'X');
-        playerTwo = enabledAi ? playerAi('AI', 'O') : player(playerTwoName, 'O');
+        if (aiType === null) {
+            playerTwo = player(playerTwoName, 'O');
+        } else {
+            playerTwo = playerAi('AI', 'O', aiType);
+        };
         setupGame();
     };
 
@@ -204,6 +294,7 @@ const gameFlow = (() => {
 
     const restartGame = () => {
         gameBoard.initializeNewBoard();
+        console.log(gameBoard.board)
         setupGame();
     };
 
