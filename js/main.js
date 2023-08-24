@@ -2,8 +2,6 @@ const player = (name, mark) => {
     return {name, mark};
 };
 
-// think how would you handle different types of AI, shoud i leave the same object and add multiple methods or change method depending on type ???
-
 const stupidAi = (mark) => {
     const makeMove = () => {
         const availablePositions = gameBoard.getEmptyCells();
@@ -15,8 +13,8 @@ const stupidAi = (mark) => {
 };
 
 const smartAi = () => {
-    MIN_MARK = 'O';
-    MAX_MARK = 'X';
+    const MIN_MARK = 'O';
+    const MAX_MARK = 'X';
 
     const makeMove = () => {
         const originalState = gameBoard.getBoard();
@@ -232,7 +230,6 @@ const displayController = (() => {
         const playerOneName = this.elements['player-one'].value;
         const playerTwoName = this.elements['player-two'].value;
         const selectedGamemode = this.elements['gamemode'].value;
-        // convert this to switch case
         if (selectedGamemode === 'default') {
             gameFlow.startGame(playerOneName, playerTwoName);
         } else {
